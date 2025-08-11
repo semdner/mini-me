@@ -4,5 +4,5 @@ mini-me is a tool for executing evil twin attacks.
 # Usage
 
 ```
-sudo bash run mini-me.sh
+sudo bash mini-me.sh
 ```
