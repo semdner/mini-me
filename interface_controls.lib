@@ -1,0 +1,54 @@
+#!/bin/bash
+
+read_mode() {
+
+    mode=$(iw dev ${ifname} info | grep "type" | awk '{print $2}')
+
+}
+
+switch_mode() {
+
+    if ! [[ -z "$ifname" ]];
+    then
+        case $mode in
+            "managed")
+                # mode="monitor"
+                sudo ip link set ${ifname} down
+                sudo iw ${ifname} set type monitor
+                sudo ip link set ${ifname} up
+                read_mode
+                ;;
+            "monitor")
+                # mode="managed"
+                sudo ip link set ${ifname} down
+                sudo iw ${ifname} set type managed
+                sudo ip link set ${ifname} up
+                read_mode
+                ;;
+            *)
+                ;;
+        esac
+    else
+        echo "No Network Interface Selected."
+        sleep 1
+    fi
+
+}
+
+select_ifname() {
+
+    printf '\033c'
+
+    status_bar
+    echo "SELECT NETWORK INTERFACE"
+
+    # list all available network interfaces
+    PS3="> "
+
+    select ifname in ${ifnames[@]}
+    do  
+        read_mode
+        break
+    done
+
+}

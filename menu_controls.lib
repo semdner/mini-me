@@ -1,0 +1,64 @@
+#!/bin/bash
+
+source network_controls.lib
+source interface_controls.lib
+
+status_bar() {
+
+    # :- means if value is unset or empty set local variable to /
+    local i="${ifname:-/}"
+    local m="${mode:-/}"
+    local e="${essid:-/}"
+    local b="${bssid:-/}"
+    local c="${channel:-/}"
+
+    printf "${BOLDWHITE}Interface: ${GREEN}%-20s${RESET} ${BOLDWHITE} Mode: ${GREEN}%s${RESET}\n" "$i" "$m"
+    printf "${BOLDWHITE}    ESSID: ${GREEN}%-20s${RESET} ${BOLDWHITE}BSSID: ${GREEN}%-17s${RESET} ${BOLDWHITE}Channel: ${GREEN}%-2s${RESET}\n" "$e" "$b" "$c"
+
+}
+
+main_menu() {
+
+    while [ true ]; do
+        # full terminal reset
+        printf '\033c'
+
+        options=(
+            "Select WiFi Adapter"
+            "Switch Mode (Managed ⮂ Monitor)"
+            "Search and Select Wifi Network"
+            "Exit"
+        )
+
+        PS3=$"> "
+
+        status_bar
+        echo "CHOOSE ACTION"
+        select opt in "${options[@]}"; do
+            case $REPLY in
+                1)
+                    select_ifname
+                    break
+                    ;;
+                2)
+                    switch_mode
+                    break
+                    ;;
+                3)
+                    scan_network
+                    select_network
+                    break
+                    ;;
+                4)
+                    exit 0
+                    ;;
+                *)
+                    echo "Invalid Selection."
+                    sleep 1
+                    break
+                    ;;
+            esac
+        done
+    done
+
+}

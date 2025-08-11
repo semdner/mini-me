@@ -1,0 +1,84 @@
+#!/bin/bash
+
+extract_networks() {
+
+    networks=()
+    while IFS="," read -r BSSID FTS LTS CH SPEED PRIVACY CIPHER AUTHENTICATION POWER BEACONS IV LANIP IDLENGTH ESSID KEY;
+    do
+        if ! [[ "${ESSID}" == " " ]]; then
+            # ESSID#? removes the first character which is always a whitespace
+            CH=$(echo "${CH}" | xargs)
+            networks+=("${ESSID#?} (${BSSID}/${CH})")
+        fi
+    done < <(tail -n +2 $apl_file)
+
+}
+
+select_network() {
+
+    printf '\033c'
+
+    status_bar
+    echo "SELECT NETWORK"
+
+    local bssid_regex='((([A-z0-9]{2}:){5})[A-z0-9]{2})'
+    local channel_regex='\/([0-9]*)\)'
+
+    select network in "${networks[@]}"
+    do
+        # extracting essid, bssid and ch from string essid (bssid/ch)
+        bssid=$(echo ${network} | grep -oP ${bssid_regex})     # extract bssid
+        channel=$(echo ${network} | grep -oP ${channel_regex}) # extract channel /ch)
+        channel=$(echo ${channel} | sed 's/^.\(.*\).$/\1/')    # remove first / and last character ) 
+        essid=$(sed -E 's/\s*\([^)]*\)//g' <<< "$network" | xargs) # extract essid by removing the entire bracket
+        break
+    done
+
+}
+
+scan_network() {
+
+    printf '\033c'
+
+    status_bar
+    echo "SEARCHING FOR NEARBY NETWORKS"
+
+    # check if the network interface is in monitor mode
+    if [[ ${mode} == "managed" ]]; then
+        echo -e "\e[3mNetwork Interface not in monitor mode."
+        echo -e "\e[3mSwitch mode from managed to monitor to start scan"
+        sleep 3
+        break
+    fi
+
+    echo -e "\e[3mPress Ctrl+C to close the second terminal when\nthe network you are looking for is displayed.\e[0m"
+
+    # create temporary file with the scan result of airodump-ng
+    scan_file=$(mktemp)
+    # run airodump-ng in seperate terminal
+    xterm -e "sudo airodump-ng $ifname --write ${scan_file} --output-format csv"
+
+    # airodump appends -01.csv. Remove the original tmp file and change the variable to the modified name create by airodump
+    sudo rm ${scan_file}
+    scan_file="${scan_file}"-*.csv
+
+    # create seperate files for the access point table and station table
+    apl_file=$(mktemp)
+    st_file=$(mktemp)
+
+    # remove first and last line because airodump add one empty line at the start and at the end
+    sed -i '1d;$d' ${scan_file}
+
+    # seperate content of access point table into extra file
+    awk '/^[[:space:]]*$/ {exit} {print}' ${scan_file} > ${apl_file}
+    # seperate content of station table into extra file
+    awk '/^Station MAC/ {found=1} found {print}' ${scan_file} > ${st_file}
+
+    sudo rm ${scan_file}
+
+    extract_networks
+
+    sudo rm ${apl_file}
+    sudo rm ${st_file}
+
+}
