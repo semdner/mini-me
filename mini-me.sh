@@ -9,9 +9,10 @@ RESET="\033[0m"
 ifnames=($(ls /sys/class/net))
 declare ifname
 declare mode
+declare channel_adapter
 declare essid
 declare bssid
-declare channel
+declare channel_network
 
 # check if script is run as root
 if [ "$EUID" -ne 0 ]

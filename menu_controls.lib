@@ -2,18 +2,20 @@
 
 source network_controls.lib
 source interface_controls.lib
+source network_attack.lib
 
 status_bar() {
 
     # :- means if value is unset or empty set local variable to /
     local i="${ifname:-/}"
     local m="${mode:-/}"
+    local ca="${channel_adapter:-/}"
     local e="${essid:-/}"
     local b="${bssid:-/}"
-    local c="${channel:-/}"
+    local cn="${channel_network:-/}"
 
-    printf "${BOLDWHITE}Interface: ${GREEN}%-20s${RESET} ${BOLDWHITE} Mode: ${GREEN}%s${RESET}\n" "$i" "$m"
-    printf "${BOLDWHITE}    ESSID: ${GREEN}%-20s${RESET} ${BOLDWHITE}BSSID: ${GREEN}%-17s${RESET} ${BOLDWHITE}Channel: ${GREEN}%-2s${RESET}\n" "$e" "$b" "$c"
+    printf "${BOLDWHITE}Interface: ${GREEN}%-20s${RESET} ${BOLDWHITE} Mode: ${GREEN}%-17s${RESET} ${BOLDWHITE}Channel: ${GREEN}%-2s${RESET}\n" "$i" "$m" "$ca"
+    printf "${BOLDWHITE}    ESSID: ${GREEN}%-20s${RESET} ${BOLDWHITE}BSSID: ${GREEN}%-17s${RESET} ${BOLDWHITE}Channel: ${GREEN}%-2s${RESET}\n" "$e" "$b" "$cn"
 
 }
 
@@ -25,8 +27,10 @@ main_menu() {
 
         options=(
             "Select WiFi Adapter"
-            "Switch Mode (Managed ⮂ Monitor)"
+            "Switch Mode    (Managed ⮂ Monitor)"
+            "Switch Channel (Interface Channel = Network Channel)"
             "Search and Select Wifi Network"
+            "Deauth Devices on Selected Network"
             "Exit"
         )
 
@@ -34,6 +38,7 @@ main_menu() {
 
         status_bar
         echo "CHOOSE ACTION"
+        COLUMNS=1
         select opt in "${options[@]}"; do
             case $REPLY in
                 1)
@@ -45,11 +50,20 @@ main_menu() {
                     break
                     ;;
                 3)
-                    scan_network
-                    select_network
+                    switch_channel
                     break
                     ;;
                 4)
+                    scan_network
+                    select_network
+                    read_channel
+                    break
+                    ;;
+                5)
+                    deauth_network
+                    exit 0
+                    ;;
+                6)
                     exit 0
                     ;;
                 *)

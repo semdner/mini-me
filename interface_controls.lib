@@ -6,6 +6,12 @@ read_mode() {
 
 }
 
+read_channel() {
+
+    channel_adapter=$(iw dev ${ifname} info | grep "channel" | awk '{print $2}')
+
+}
+
 switch_mode() {
 
     if ! [[ -z "$ifname" ]];
@@ -35,6 +41,21 @@ switch_mode() {
 
 }
 
+switch_channel() {
+
+    if ! [[ -z "$ifname" ]] && ! [[ -z "$channel_network" ]];
+    then
+
+        sudo iw ${ifname} set channel ${channel_network}
+        channel_adapter=${channel_network}
+        
+    else
+        echo "No Network Interface or WiFi Network Channel Found."
+        sleep 1
+    fi
+
+}
+
 select_ifname() {
 
     printf '\033c'
@@ -48,6 +69,7 @@ select_ifname() {
     select ifname in ${ifnames[@]}
     do  
         read_mode
+        read_channel
         break
     done
 

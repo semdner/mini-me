@@ -28,8 +28,8 @@ select_network() {
     do
         # extracting essid, bssid and ch from string essid (bssid/ch)
         bssid=$(echo ${network} | grep -oP ${bssid_regex})     # extract bssid
-        channel=$(echo ${network} | grep -oP ${channel_regex}) # extract channel /ch)
-        channel=$(echo ${channel} | sed 's/^.\(.*\).$/\1/')    # remove first / and last character ) 
+        channel_network=$(echo ${network} | grep -oP ${channel_regex}) # extract channel /ch)
+        channel_network=$(echo ${channel_network} | sed 's/^.\(.*\).$/\1/')    # remove first / and last character ) 
         essid=$(sed -E 's/\s*\([^)]*\)//g' <<< "$network" | xargs) # extract essid by removing the entire bracket
         break
     done

