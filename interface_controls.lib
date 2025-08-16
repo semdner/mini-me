@@ -10,6 +10,11 @@ read_channel() {
 
     channel_adapter=$(iw dev ${ifname} info | grep "channel" | awk '{print $2}')
 
+    if [[ -z "$ifname" ]];
+    then
+        channel_adapter=
+    fi
+
 }
 
 switch_mode() {

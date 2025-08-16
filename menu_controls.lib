@@ -47,6 +47,7 @@ main_menu() {
                     ;;
                 2)
                     switch_mode
+                    read_channel
                     break
                     ;;
                 3)
