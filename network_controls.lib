@@ -12,6 +12,10 @@ extract_networks() {
         fi
     done < <(tail -n +2 $apl_file)
 
+    # Sort array 
+    IFS=$'\n' networks=($(sort <<< "${networks[*]}"))
+    unset IFS
+
 }
 
 select_network() {
