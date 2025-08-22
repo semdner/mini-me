@@ -2,6 +2,8 @@
 
 deauth_network() {
 
+    echo -e "\e[3mPress Ctrl+C to close the second terminal to\nstop the deauthenticaion.\e[0m"
+
     xterm -e "sudo aireplay-ng --deauth 0 -a ${bssid} ${ifname}"
 
 }

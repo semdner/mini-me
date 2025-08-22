@@ -68,14 +68,33 @@ select_ifname() {
     status_bar
     echo "SELECT NETWORK INTERFACE"
 
+    arr_len=${#ifnames[@]}
+
     # list all available network interfaces
     PS3="> "
 
+<<<<<<< HEAD
     select ifname in ${ifnames[@]};
     do  
         read_mode
         read_channel
         break
+=======
+    select ifname in ${ifnames[@]}
+    do
+        case $REPLY in
+            [1-${arr_len}])
+                read_mode
+                read_channel
+                main_menu
+                ;;
+            *)
+                echo "Invalid Selection."
+                sleep 1
+                select_ifname
+                ;;
+        esac
+>>>>>>> refs/remotes/origin/main
     done
 
 }

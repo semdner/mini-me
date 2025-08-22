@@ -28,8 +28,8 @@ main_menu() {
         options=(
             "Select WiFi Adapter"
             "Switch Mode    (Managed ⮂ Monitor)"
-            "Switch Channel (Interface Channel = Network Channel)"
             "Search and Select Wifi Network"
+            "Set Interface Channel to Network Channel"
             "Deauth Devices on Selected Network"
             "Exit"
         )
@@ -51,18 +51,18 @@ main_menu() {
                     break
                     ;;
                 3)
-                    switch_channel
-                    break
-                    ;;
-                4)
                     scan_network
                     select_network
                     read_channel
                     break
                     ;;
+                4)
+                    switch_channel
+                    break
+                    ;;
                 5)
                     deauth_network
-                    exit 0
+                    break
                     ;;
                 6)
                     exit 0
