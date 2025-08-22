@@ -71,7 +71,7 @@ select_ifname() {
     # list all available network interfaces
     PS3="> "
 
-    select ifname in ${ifnames[@]}
+    select ifname in ${ifnames[@]};
     do  
         read_mode
         read_channel
