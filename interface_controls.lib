@@ -73,13 +73,6 @@ select_ifname() {
     # list all available network interfaces
     PS3="> "
 
-<<<<<<< HEAD
-    select ifname in ${ifnames[@]};
-    do  
-        read_mode
-        read_channel
-        break
-=======
     select ifname in ${ifnames[@]}
     do
         case $REPLY in
@@ -94,7 +87,6 @@ select_ifname() {
                 select_ifname
                 ;;
         esac
->>>>>>> refs/remotes/origin/main
     done
 
 }
