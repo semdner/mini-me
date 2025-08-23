@@ -37,6 +37,10 @@ switch_mode() {
                 read_mode
                 ;;
             *)
+                sudo ip link set ${ifname} down
+                sudo iw ${ifname} set type monitor
+                sudo ip link set ${ifname} up
+                read_mode
                 ;;
         esac
     else
