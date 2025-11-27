@@ -66,6 +66,7 @@ switch_channel() {
 }
 
 select_ifname() {
+    ifnames=''
 
     printf '\033c'
 
@@ -77,12 +78,18 @@ select_ifname() {
     # list all available network interfaces
     PS3="> "
 
-    select ifname in ${ifnames[@]}
+    ifnames="${ifnames[@]} Exit"
+
+    select ifname in ${ifnames}
     do
         case $REPLY in
-            [1-${arr_len}])
+            [1-$((arr_len-1))])
                 read_mode
                 read_channel
+                main_menu
+                ;;
+            [$((arr_len))])
+                unset -v ifname
                 main_menu
                 ;;
             *)
